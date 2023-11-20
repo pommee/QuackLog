@@ -1,4 +1,7 @@
+import datetime
 import json
+
+from fastapi import HTTPException
 
 
 def save_log(log_item):
@@ -7,7 +10,6 @@ def save_log(log_item):
         date_parts = time_sent.split("T")[0].split("-")
         year, month, day = date_parts
 
-        # Check if the file exists and is not empty
         try:
             with open("logs_main.json", "r") as infile:
                 content = infile.read()
@@ -18,7 +20,6 @@ def save_log(log_item):
         except FileNotFoundError:
             content = {}
 
-        # Create logs structure if not present
         content.setdefault("logs", {})
         content["logs"].setdefault(year, {})
         content["logs"][year].setdefault(month, {})
@@ -34,7 +35,38 @@ def save_log(log_item):
         return {"error": "Invalid log format. 'time_sent' field is missing or invalid."}
 
 
-def get_logs_from_range(year: str, month: str, day: str) -> dict:
+def get_logs_from_range(
+    start_year: str,
+    start_month: str,
+    start_day: str,
+    end_year: str,
+    end_month: str,
+    end_day: str,
+):
+    start_date = datetime.datetime(int(start_year), int(start_month), int(start_day))
+    end_date = datetime.datetime(
+        int(end_year), int(end_month), int(end_day)
+    ) + datetime.timedelta(days=1)
+
+    logs = []
+    current_date = start_date
+
+    while current_date < end_date:
+        year, month, day = (
+            current_date.strftime("%Y"),
+            current_date.strftime("%m"),
+            current_date.strftime("%d"),
+        )
+        logs.extend(get_logs_from_range_helper(year, month, day))
+        current_date += datetime.timedelta(days=1)
+
+    if not logs:
+        raise HTTPException(status_code=404, detail="Logs not found")
+
+    return logs
+
+
+def get_logs_from_range_helper(year: str, month: str, day: str) -> dict:
     try:
         with open("logs_main.json", "r") as infile:
             content = json.load(infile)
