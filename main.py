@@ -1,29 +1,22 @@
-from fastapi import FastAPI, Request
-from db_helper import save_log, get_logs_from_range
+import uvicorn
 
-app = FastAPI()
-
-
-@app.post("/")
-async def create_log_item(request: Request):
-    log_item = await request.json()
-    save_log(log_item)
+from core.v1.api import start
 
 
-@app.get("/")
-async def get_logs_within_range(
-    start_year: str,
-    start_month: str,
-    start_day: str,
-    end_year: str,
-    end_month: str,
-    end_day: str,
-):
-    return get_logs_from_range(
-        start_year,
-        start_month,
-        start_day,
-        end_year,
-        end_month,
-        end_day,
+if __name__ == "__main__":
+    print(
+        r"""
+ .d88888b.           ⠀⠀⠀⠀⠀⠀⣀⣤⣶⣶⣤⡀            888      888                      ⠀
+d88P" "Y88b         ⠀⠀⠀⠀ ⢀⣾⠛⠁⢰⣧⡈⢻⣦           888      888                   ⠀⠀⠀⠀
+888     888          ⠀⠀⠀⠀⢸⣇⣼⡀⠻⠟⠁⠀⢻⡆          888      888                 ⠀⠀⠀⠀⠀
+888     888 888  888 ⠀⠀⠀⢀⡞⣹⠙⣧⡀⠀⠀⡀⢸⡇  .d8888b 888  888 888       .d88b.   .d88b.
+888     888 888  888 ⠀⣀⡴⠋⠀⣀⣴⣿⡷⠴⠞⠁⢸⡇ d88P"    888 .88P 888      d88""88b d88P"88b
+888 Y8b 888 888  888 ⢾⣁⣀⡤⠾⠛⠁⣸⠀⠀⠀⠀⢸⡇ 888      888888K  888      888  888 888  888
+Y88b.Y8b88P Y88b 888   ⠀⠀⠀⠀⢠⡟⠀⠀⠀⠀⣾⠃ Y88b.    888 "88b 888      Y88..88P Y88b 888
+ "Y888888"   "Y88888 ⠀⠀⠀⠀⠀⣠⣿⠁⠀⠀⠀⢀⣿   "Y8888P 888  888 88888888  "Y88P"   "Y88888
+       Y8b                                                                     888
+                                                                          Y8b d88P
+                                                                           "Y88P"⠀
+    """
     )
+    start()
