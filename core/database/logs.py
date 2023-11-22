@@ -35,22 +35,11 @@ def save_log(log_item):
         return {"error": "Invalid log format. 'time_sent' field is missing or invalid."}
 
 
-def get_logs_from_range(
-    start_year: str,
-    start_month: str,
-    start_day: str,
-    end_year: str,
-    end_month: str,
-    end_day: str,
-):
-    start_date = datetime.datetime(int(start_year), int(start_month), int(start_day))
-    end_date = datetime.datetime(
-        int(end_year), int(end_month), int(end_day)
-    ) + datetime.timedelta(days=1)
-
+def get_logs_from_range(start_date: datetime, end_date: datetime):
+    end_date += datetime.timedelta(days=1)
     logs = []
-    current_date = start_date
 
+    current_date = start_date
     while current_date < end_date:
         year, month, day = (
             current_date.strftime("%Y"),

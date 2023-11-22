@@ -1,13 +1,12 @@
-FROM python:3.12.0-slim
+FROM python:3.12.0
 
-WORKDIR /app
+COPY . .
 
 ADD main.py main.py
 
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install -r requirements.txt
+EXPOSE 8000:8000
 
-COPY . .
-
-CMD [ "python", "./main.py" ]
+ENTRYPOINT [ "python", "main.py" ]
