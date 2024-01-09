@@ -23,15 +23,8 @@ Creating a system that can store logs and easily be implemented. Running in an c
 ## Installation
 
 ### Locally
-This just runs the logger in a terminal.  
-`uvicorn main:app`  
-Adding the flag `--reload` makes it refresh whenever changes are detected.  
-
-### Containerized
-To run inside a container. This will attach to the current terminal.  
-`docker compose up --build`  
-Run with the flag `-d` to detach it from the terminal. Running in the background with the name "quacklog-quacklog-1".  
-
+The `Makefile` handles the setup for us.  
+Just run `make build-run` - this will build and run the container.
 
 ## API
 

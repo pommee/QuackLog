@@ -1,26 +1,24 @@
-import datetime
-from fastapi.responses import JSONResponse
 import uvicorn
 
+from datetime import datetime
+from fastapi.responses import JSONResponse
 from fastapi import FastAPI, HTTPException, Request
 from core.database.logs import save_log, get_logs_from_range
 
-app = FastAPI()
+api = FastAPI()
 
 
 def start():
-    uvicorn.run("core.v1.api:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("core.v1.api:api", host="0.0.0.0", port=8000, reload=False)
 
 
-@app.post("/")
-def create_log_item(request: Request):
-    log_item = request.json()
-    save_log(log_item)
+@api.post("/")
+async def create_log_item(request: Request):
+    return save_log(await request.json())
 
 
-@app.get("/")
+@api.get("/")
 def get_logs_within_range(request: Request):
-    print("test")
     start_param = request.query_params.get("start")
     end_param = request.query_params.get("end")
 
@@ -35,15 +33,14 @@ def get_logs_within_range(request: Request):
             "status_code": 400,
             "message": "Missing parameter(s)",
             "parameters": missing_params,
-            "timestamp": datetime.datetime.now().isoformat(),
+            "timestamp": datetime.now().isoformat(),
         }
         return JSONResponse(content=error_data, status_code=400)
 
     try:
         start_date, end_date = map(
-            datetime.datetime.fromisoformat, [start_param, end_param]
+            datetime.now().fromisoformat, [start_param, end_param]
         )
-    except ValueError as e:
+        return get_logs_from_range(start_date, end_date)
+    except ValueError:
         raise HTTPException(status_code=400, detail="Invalid datetime format")
-
-    return get_logs_from_range(start_date, end_date)
